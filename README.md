@@ -1,3 +1,12 @@
+# Monorepo Structure
+
+This project uses a monorepo structure to manage both backend and frontend codebases:
+
+- `backend/` – Node.js/Express backend (scraping, API, database)
+- `frontend/` – React frontend (browser-based, German UI)
+
+See each subdirectory for details. All requirements and architecture are in PRD.md.
+
 # mensa-sniper
 
 A lightweight web application (browser-based, not a native or mobile app) that fetches, structures, and enriches meal
