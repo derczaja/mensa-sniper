@@ -1,3 +1,4 @@
+require('dotenv').config();
 // Basic Express server for mensa-sniper backend
 const express = require('express');
 const connectDB = require('./db');

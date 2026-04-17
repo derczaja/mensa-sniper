@@ -131,7 +131,11 @@ if (require.main === module && process.argv[2] === 'openai') {
                 const resp = await axios.post('http://localhost:3001/meals/bulk', dedupedMeals);
                 console.log('Backend bulk insert response:', resp.data);
             } catch (err) {
-                console.error('Bulk insert failed:', err.response ? err.response.data : err.message);
+                if (err.response) {
+                    console.error('Bulk insert failed:', err.response.status, err.response.data);
+                } else {
+                    console.error('Bulk insert failed:', err.message, err.stack);
+                }
             }
             return dedupedMeals;
         })
