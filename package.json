@@ -13,5 +13,9 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "openai": "^6.34.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0"
   }
 }
