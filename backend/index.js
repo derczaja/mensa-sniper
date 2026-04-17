@@ -14,6 +14,30 @@ const PORT = process.env.PORT || 3001;
 
 // Connect to MongoDB
 connectDB();
+// Flattened meals endpoint for frontend
+app.get('/api/meals', async (req, res) => {
+    try {
+        const meals = await Meal.find();
+        // Flatten planned meals
+        const flatMeals = [];
+        meals.forEach(meal => {
+            (meal.planned || []).forEach(plan => {
+                flatMeals.push({
+                    id: meal._id,
+                    name: meal.name,
+                    description: meal.description,
+                    category: meal.category,
+                    tags: meal.tags,
+                    date: plan.date.toISOString().slice(0, 10),
+                    location: plan.location
+                });
+            });
+        });
+        res.json(flatMeals);
+    } catch (err) {
+        res.status(500).json({error: 'Fehler beim Abrufen der Meals', details: err.message});
+    }
+});
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 

@@ -1,38 +1,580 @@
-.App {
-    text-align: center;
+/* Fix: Umrandung und Highlight auch beim Hover auf ausgewählte Tage ohne Gerichte */
+.lux-calendar-item.disabled.selected:hover {
+    border: 2.5px solid #e7c97b !important;
+    background: linear-gradient(90deg, #e7c97b66 0%, #2d2e36 100%) !important;
+    color: #fffbe9 !important;
+    opacity: 1 !important;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Fix: Umrandung und Highlight für ausgewählte Tage ohne Gerichte */
+.lux-calendar-item.disabled.selected {
+    border: 2.5px solid #e7c97b !important;
+    background: linear-gradient(90deg, #e7c97b66 0%, #2d2e36 100%) !important;
+    color: #fffbe9 !important;
+    opacity: 1 !important;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Spacer for calendar list to preserve right padding */
+.lux-calendar-spacer {
+    flex: 0 0 auto;
+    width: 0.1px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
 }
 
-.App-header {
-    background-color: #282c34;
+body {
+    margin: 0;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
+    background: #191b1f;
+    color: #f3f3f3;
+}
+
+.lux-app {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: #191b1f;
+}
+
+.lux-header {
+    background: #23242a;
+    padding: 2.5rem 2rem 1.5rem 2rem;
+    box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.10);
+    text-align: center;
+}
+
+.lux-header h1 {
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.5rem 0;
+    color: #e7c97b;
+}
+
+.lux-subtitle {
+    font-size: 1.2rem;
+    color: #b3b3b3;
+    margin-bottom: 0;
+}
+
+.lux-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.lux-header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.lux-header-search {
+    display: flex;
+    align-items: flex-end;
+    min-width: 220px;
+}
+
+.lux-search-header {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+    min-width: 220px;
+}
+
+.lux-main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin: 2.5rem 0 0 0;
+    gap: 0;
+    padding: 0;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    flex: 1 0 auto;
+    box-sizing: border-box;
+}
+
+.lux-calendar {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    box-sizing: border-box;
+}
+
+.lux-calendar-scroll-wrapper {
+    width: 100%;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+}
+
+.lux-calendar-arrow {
+    background: #23242a;
+    color: #e7c97b;
+    border: none;
+    border-radius: 50%;
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.5rem;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 8px 0 rgba(231, 201, 123, 0.10);
+    transition: background 0.2s, color 0.2s;
+    z-index: 2;
 }
 
-.App-link {
-    color: #61dafb;
+.lux-calendar-arrow.disabled,
+.lux-calendar-arrow:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #23242a !important;
+    color: #b3b3b3 !important;
+    box-shadow: none !important;
+    border: none;
 }
 
-@keyframes App-logo-spin {
+.lux-calendar-arrow:hover {
+    background: #e7c97b;
+    color: #23242a;
+}
+
+.lux-calendar-arrow.left {
+    margin-right: 0.7rem;
+}
+
+.lux-calendar-arrow.right {
+    margin-left: 0.7rem;
+}
+
+.lux-calendar-list {
+    width: 100%;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+.lux-calendar-list {
+    order: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 0 1rem 0;
+    margin: 0;
+    list-style: none;
+    scrollbar-width: none; /* Firefox: keine Scrollbar anzeigen */
+}
+
+.lux-calendar-list::-webkit-scrollbar {
+    display: none; /* Chrome/Safari: keine Scrollbar anzeigen */
+}
+
+@media (max-width: 700px) {
+    .lux-calendar {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .lux-calendar-scroll-wrapper {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .lux-calendar-list {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        scrollbar-width: thin;
+    }
+
+    .lux-calendar-list::-webkit-scrollbar {
+        display: block;
+        height: 6px;
+        background: #23242a;
+    }
+
+    .lux-calendar-list::-webkit-scrollbar-thumb {
+        background: #e7c97b;
+        border-radius: 3px;
+    }
+}
+
+.lux-calendar-item {
+    background: #23242a;
+    color: #e7c97b;
+    border-radius: 1.2rem;
+    padding: 0.5rem 1.1rem;
+    font-size: 1.05rem;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: background 0.2s, border 0.2s, color 0.2s;
+    font-weight: 500;
+    user-select: none;
+}
+
+.lux-calendar-item.selected, .lux-calendar-item.today.selected {
+    background: linear-gradient(90deg, #e7c97b66 0%, #2d2e36 100%);
+    border: 2.5px solid #e7c97b;
+    color: #fffbe9;
+    box-shadow: 0 2px 12px 0 rgba(231, 201, 123, 0.18);
+    z-index: 1;
+}
+
+/* Remove highlight for today if not selected */
+.lux-calendar-item.today:not(.selected) {
+    background: #23242a;
+    border: 1.5px solid transparent;
+    color: #e7c97b;
+}
+
+.lux-calendar-item.today:not(.selected):hover {
+    color: #fffbe9;
+}
+
+.lux-calendar-item:hover {
+    background: #2d2e36;
+    border: 1.5px solid #e7c97b;
+    color: #fffbe9;
+}
+
+.lux-calendar-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #23242a !important;
+    color: #b3b3b3 !important;
+    border: 1.5px solid transparent !important;
+    box-shadow: none !important;
+}
+
+/* .lux-calendar-item.disabled.selected entfernt, damit ausgewählte Tage immer umrandet werden */
+
+/* Highlight for today in calendar */
+.lux-calendar-item.today {
+    background: linear-gradient(90deg, #e7c97b33 0%, #23242a 100%);
+    border: 1.5px solid #e7c97b;
+    color: #fffbe9;
+    position: relative;
+}
+
+.lux-calendar-heute {
+    display: block;
+    font-size: 0.85rem;
+    color: #e7c97b;
+    font-weight: 600;
+    margin-top: 0.1rem;
+    letter-spacing: 0.02em;
+    text-align: center;
+}
+
+.lux-search {
+    flex-basis: 100%;
+    margin-bottom: 2rem;
+}
+
+.lux-search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid #2d2e36;
+    border-radius: 2rem;
+    font-size: 1.1rem;
+    background: #23242a;
+    color: #f3f3f3;
+    transition: border 0.2s;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.10);
+}
+
+.lux-search-input:focus {
+    border: 1.5px solid #e7c97b;
+    outline: none;
+}
+
+.lux-menu-list {
+    width: 100%;
+}
+
+.lux-meal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.lux-meal-item {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.lux-detail-view {
+    flex: 1 1 60%;
+    background: #23242a;
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.13);
+    padding: 2rem 2.5rem;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lux-meal-detail {
+    width: 100%;
+}
+
+.lux-meal-detail h3 {
+    font-size: 2rem;
+    color: #e7c97b;
+    margin-bottom: 0.7rem;
+    font-weight: 600;
+}
+
+.lux-meal-desc {
+    font-size: 1.15rem;
+    color: #f3f3f3;
+    margin-bottom: 1.2rem;
+}
+
+.lux-tags {
+    margin-bottom: 1.2rem;
+}
+
+.lux-tag {
+    display: inline-block;
+    background: #2d2e36;
+    color: #e7c97b;
+    border-radius: 1rem;
+    padding: 0.3rem 1rem;
+    font-size: 0.95rem;
+    margin-right: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+
+.lux-placeholder {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.lux-footer {
+    background: #23242a;
+    text-align: center;
+    padding: 1.2rem 0 1.2rem 0;
+    color: #e7c97b;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    box-shadow: 0 -2px 16px 0 rgba(0, 0, 0, 0.10);
+    margin-top: 2.5rem;
+}
+
+/* Popup Styles */
+.lux-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(25, 27, 31, 0.85);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s;
+}
+
+.lux-popup {
+    background: #23242a;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    min-width: 320px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    color: #f3f3f3;
+    animation: popupIn 0.2s;
+}
+
+.lux-popup-close {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: #e7c97b;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.2s;
+}
+
+.lux-popup-close:hover {
+    color: #fffbe9;
+}
+
+@keyframes fadeIn {
     from {
-        transform: rotate(0deg);
+        opacity: 0;
     }
     to {
-        transform: rotate(360deg);
+        opacity: 1;
     }
+}
+
+@keyframes popupIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive grid for meal cards */
+.lux-meal-cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 320px));
+    gap: 2.2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+    align-items: stretch;
+    padding-left: 4rem;
+    padding-right: 4rem;
+    box-sizing: border-box;
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
+@media (max-width: 700px) {
+    .lux-meal-cards {
+        grid-template-columns: 1fr;
+        gap: 1.7rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+.lux-meal-card {
+    width: 100%;
+    max-width: 320px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    border: 1.5px solid #e7c97b;
+    border-radius: 1.2rem;
+    padding: 0.3rem 0.5rem 0.3rem 0.5rem;
+    box-shadow: 0 2px 12px 0 rgba(231, 201, 123, 0.10);
+    background: #23242a;
+}
+
+.lux-meal-card > *:not(:last-child) {
+    margin-bottom: 0.12rem;
+}
+
+/* Zentriere Text in Boxen */
+.lux-meal-card h3,
+.lux-meal-card .lux-meal-desc,
+.lux-meal-card .lux-meal-category-badge,
+.lux-meal-card .lux-meal-location,
+.lux-meal-card .lux-tags {
+    text-align: center;
+}
+
+.lux-meal-card:hover {
+    border: 2.5px solid #e7c97b;
+    box-shadow: 0 4px 24px 0 rgba(231, 201, 123, 0.18);
+}
+
+@media (max-width: 700px) {
+    .lux-meal-card {
+        padding: 1.2rem 1rem 1rem 1rem;
+    }
+}
+
+.lux-meal-category-badge {
+    display: inline-block;
+    margin: 0.5rem 0 0.8rem 0;
+    padding: 0.22em 0.9em;
+    background: linear-gradient(90deg, #e7c97b33 0%, #23242a 100%);
+    color: #e7c97b;
+    border-radius: 1.2rem;
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow: 0 1px 8px 0 rgba(231, 201, 123, 0.08);
+    border: 1.2px solid #e7c97b;
+    text-align: center;
+}
+
+.lux-meal-location {
+    margin: 0.5rem 0 0.8rem 0;
+    padding: 0.18em 0.9em;
+    background: linear-gradient(90deg, #e7c97b22 0%, #23242a 100%);
+    color: #e7c97b;
+    border-radius: 1.2rem;
+    font-size: 0.97rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    box-shadow: 0 1px 8px 0 rgba(231, 201, 123, 0.06);
+    border: 1px solid #e7c97b44;
+    text-align: center;
+    display: inline-block;
+}
+
+.lux-location-label {
+    font-weight: 600;
+    color: #e7c97b;
+    margin-right: 0.3em;
+}
+
+.lux-location-value {
+    color: #fffbe9;
+    font-weight: 500;
+}
+
+.lux-meal-card-empty {
+    border: 1.5px solid #e7c97b;
+    border-radius: 1.2rem;
+    background: #23242a;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 2px 12px 0 rgba(231, 201, 123, 0.10);
+}
+
+.lux-meal-name {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 1.18rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    padding-top: 0.7rem;
 }

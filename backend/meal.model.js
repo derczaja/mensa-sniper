@@ -19,11 +19,8 @@ const MealSchema = new mongoose.Schema({
     meta: {
         scrapedAt: {type: Date, default: Date.now},
         sourceUrl: {type: String},
-        popularity: {type: Number, default: 0},
         enriched: {type: Boolean, default: false}
     }
 });
 
 module.exports = mongoose.model('Meal', MealSchema);
-
-
