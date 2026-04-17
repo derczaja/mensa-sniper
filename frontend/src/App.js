@@ -172,7 +172,6 @@ function App() {
                                             setSelectedMeal(null);
                                         }}
                                         tabIndex={0}
-                                        aria-disabled={false}
                                     >
                                         <span className="lux-calendar-label">{day.label}</span>
                                         {isToday && <span className="lux-calendar-heute">Heute</span>}
