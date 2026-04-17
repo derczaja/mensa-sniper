@@ -14,7 +14,7 @@ Diese Checkliste ist entlang der definierten Meilensteine strukturiert und zeigt
 
 ## Milestone 2: Backend Core (API & Database)
 
-- [ ] MongoDB-Schema für Meals & Metadaten entwerfen
+- [x] MongoDB-Schema für Meals & Metadaten entwerfen
 - [ ] REST API Endpunkte für CRUD-Operationen implementieren
 - [ ] MongoDB-Anbindung und Datenmodelle integrieren
 
