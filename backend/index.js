@@ -3,7 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const connectDB = require('./db');
 const Meal = require('./meal.model');
+
 const OpenAI = require('openai');
+const cron = require('node-cron');
+const {exec} = require('child_process');
 
 const app = express();
 app.use(express.json()); // Middleware for JSON parsing
@@ -130,6 +133,23 @@ app.post('/meals/bulk', async (req, res) => {
     } catch (err) {
         res.status(500).json({error: 'Bulk operation failed', details: err.message});
     }
+});
+
+
+// Schedule scraping job daily at 6:00 AM
+cron.schedule('0 6 * * *', () => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] Starting scheduled scraping job...`);
+    exec('node backend/scraping.js openai', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`[${timestamp}] Scraping job failed:`, error.message);
+            return;
+        }
+        if (stderr) {
+            console.error(`[${timestamp}] Scraping job stderr:`, stderr);
+        }
+        console.log(`[${timestamp}] Scraping job output:`, stdout);
+    });
 });
 
 app.listen(PORT, () => {
