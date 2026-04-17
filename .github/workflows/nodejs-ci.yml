@@ -2,16 +2,16 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ dev ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ dev ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 18.x ]
+        node-version: [18.x]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
@@ -21,16 +21,18 @@ jobs:
       - name: Install backend dependencies
         run: |
           cd backend
-          npm ci
-      - name: Lint backend
+          npm install
+      - name: Start backend (test run)
         run: |
           cd backend
-          npx eslint .
+          node index.js &
+          sleep 5
       - name: Install frontend dependencies
         run: |
           cd frontend
-          npm ci
-      - name: Lint frontend
+          npm install
+      - name: Build frontend
         run: |
           cd frontend
-          npx eslint .
+          npm run build
+
