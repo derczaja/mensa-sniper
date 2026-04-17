@@ -21,7 +21,7 @@ app.get('/meals', async (req, res) => {
     try {
         const meals = await Meal.find();
         res.json(meals);
-    } catch (err) {
+    } catch {
         res.status(500).json({error: 'Fehler beim Abrufen der Meals'});
     }
 });
@@ -32,7 +32,7 @@ app.get('/meals/:id', async (req, res) => {
         const meal = await Meal.findById(req.params.id);
         if (!meal) return res.status(404).json({error: 'Meal nicht gefunden'});
         res.json(meal);
-    } catch (err) {
+    } catch {
         res.status(500).json({error: 'Fehler beim Abrufen des Meals'});
     }
 });
@@ -65,7 +65,7 @@ app.delete('/meals/:id', async (req, res) => {
         const meal = await Meal.findByIdAndDelete(req.params.id);
         if (!meal) return res.status(404).json({error: 'Meal nicht gefunden'});
         res.json({message: 'Meal gelöscht'});
-    } catch (err) {
+    } catch {
         res.status(500).json({error: 'Fehler beim Löschen des Meals'});
     }
 });
