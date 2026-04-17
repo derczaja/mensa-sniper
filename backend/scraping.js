@@ -18,7 +18,7 @@ async function extractMealsWithOpenAI(htmlText) {
     });
     // Extrahiere JSON aus der Antwort
     const content = response.choices[0].message.content;
-    const match = content.match(/\[.*\]/s);
+    const match = content.match(/\[.*]/s); // removed redundant escape for ]
     if (match) {
         return JSON.parse(match[0]);
     }
@@ -89,8 +89,9 @@ if (require.main === module && process.argv[2] === 'openai') {
                     console.log('OpenAI-extrahierte Gerichte:', normalizedMeals);
                 });
             }
-            // Just normalize and output meals as before, no tags
-            const normalizedMeals = meals.map(meal => {
+            // Deduplicate meals by name and category, aggregate (date, location) pairs
+            const mealMap = new Map();
+            meals.forEach(meal => {
                 let kategorie = meal.kategorie || '';
                 if (/vegetarisch|fleischlos/i.test(kategorie)) {
                     kategorie = 'Vegetarisch';
@@ -101,14 +102,42 @@ if (require.main === module && process.argv[2] === 'openai') {
                 if (/^Dessert(\s*\(.*\))?$/i.test(kategorie)) {
                     kategorie = 'Dessert';
                 }
-                return {...meal, kategorie};
+                const key = `${meal.name}|||${kategorie}`;
+                if (!mealMap.has(key)) {
+                    mealMap.set(key, {
+                        name: meal.name,
+                        category: kategorie,
+                        tags: [],
+                        datesAndLocations: [],
+                        meta: {
+                            scrapedAt: new Date(),
+                            sourceUrl: 'https://www.studierendenwerk-muenchen-oberbayern.de/mensa/speiseplan/speiseplan_422_-de.html'
+                        }
+                    });
+                }
+                // Add the (date, location) pair if not already present
+                const entry = mealMap.get(key);
+                if (!entry.datesAndLocations.some(dl => dl.date === meal.date && dl.location === meal.ort)) {
+                    entry.datesAndLocations.push({date: meal.date, location: meal.ort});
+                }
             });
-            console.log('Direkt extrahierte Gerichte:', normalizedMeals);
-            return normalizedMeals;
+            // Map 'datesAndLocations' to 'planned' for backend compatibility and remove 'datesAndLocations'
+            const dedupedMeals = Array.from(mealMap.values()).map(meal => {
+                const {datesAndLocations, ...rest} = meal;
+                return {...rest, planned: datesAndLocations};
+            });
+            // Send to backend bulk endpoint
+            try {
+                const resp = await axios.post('http://localhost:3001/meals/bulk', dedupedMeals);
+                console.log('Backend bulk insert response:', resp.data);
+            } catch (err) {
+                console.error('Bulk insert failed:', err.response ? err.response.data : err.message);
+            }
+            return dedupedMeals;
         })
         .then(meals => {
             if (meals && Array.isArray(meals)) {
-                // Already normalized and tags included, just output
+                // Output deduplicated meals with datesAndLocations
                 console.log('Extrahierte Gerichte:', meals);
             }
         })
@@ -116,5 +145,3 @@ if (require.main === module && process.argv[2] === 'openai') {
             console.error('Gerichte-Extraktion fehlgeschlagen:', err.message);
         });
 }
-
-

@@ -2,6 +2,7 @@
 const express = require('express');
 const connectDB = require('./db');
 const Meal = require('./meal.model');
+const OpenAI = require('openai');
 
 const app = express();
 app.use(express.json()); // Middleware for JSON parsing
@@ -10,6 +11,23 @@ const PORT = process.env.PORT || 3001;
 // Connect to MongoDB
 connectDB();
 
+const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+
+// AI-based meal similarity check
+async function areMealsSameAI(mealA, mealB) {
+    const prompt = `Vergleiche diese beiden Mensa-Gerichte und beantworte nur mit "true" (wenn sie das gleiche Gericht sind, auch bei kleinen Unterschieden) oder "false" (wenn sie unterschiedlich sind):\n\nGericht 1: ${JSON.stringify(mealA)}\nGericht 2: ${JSON.stringify(mealB)}`;
+    const response = await openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+            {role: 'system', content: 'Du bist ein strenger Duplikatprüfer für Mensa-Gerichte.'},
+            {role: 'user', content: prompt}
+        ],
+        max_tokens: 5,
+        temperature: 0.0
+    });
+    const content = response.choices[0].message.content.trim().toLowerCase();
+    return content.startsWith('true');
+}
 
 app.get('/', (req, res) => {
     res.send('Mensa-Sniper Backend läuft!'); // German output as required
@@ -67,6 +85,49 @@ app.delete('/meals/:id', async (req, res) => {
         res.json({message: 'Meal gelöscht'});
     } catch {
         res.status(500).json({error: 'Fehler beim Löschen des Meals'});
+    }
+});
+
+// Bulk insert or update meals with AI deduplication
+app.post('/meals/bulk', async (req, res) => {
+    const meals = req.body;
+    if (!Array.isArray(meals)) {
+        return res.status(400).json({error: 'Request body must be an array of meals'});
+    }
+    try {
+        // Fetch all existing meals (optimization possible, but fetch all for now)
+        const allExistingMeals = await Meal.find();
+        let processed = [];
+        for (const meal of meals) {
+            // meal should have: name, description, category, tags, planned (array of {date, location}), meta
+            let found = false;
+            for (const existing of allExistingMeals) {
+                // Use AI to check if meals are the same (ignore planned field in comparison)
+                const mealForAI = {...meal};
+                const existingForAI = {...existing.toObject()};
+                delete mealForAI.planned;
+                delete existingForAI.planned;
+                if (await areMealsSameAI(mealForAI, existingForAI)) {
+                    // Merge planned arrays, avoiding duplicates
+                    const newPlanned = meal.planned || [];
+                    await Meal.updateOne(
+                        {_id: existing._id},
+                        {$addToSet: {'planned': {$each: newPlanned}}, $set: {meta: meal.meta || {}}}
+                    );
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                // Insert as new meal
+                const newMeal = new Meal(meal);
+                await newMeal.save();
+            }
+            processed.push({name: meal.name, planned: meal.planned, matched: found});
+        }
+        res.status(200).json({message: 'Meals processed with AI deduplication', processed});
+    } catch (err) {
+        res.status(500).json({error: 'Bulk operation failed', details: err.message});
     }
 });
 

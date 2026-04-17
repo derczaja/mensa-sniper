@@ -7,8 +7,15 @@ const MealSchema = new mongoose.Schema({
     // price removed: no price should be specified
     category: {type: String}, // e.g. "Vegetarisch", "Vegan", "Fleisch"
     tags: [String],
-    date: {type: Date, required: true},
-    location: {type: String}, // Mensa-Standort
+    planned: {
+        type: [
+            {
+                date: {type: Date, required: true},
+                location: {type: String, required: true}
+            }
+        ],
+        required: true
+    },
     meta: {
         scrapedAt: {type: Date, default: Date.now},
         sourceUrl: {type: String},
