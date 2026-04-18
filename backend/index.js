@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({path: require('path').resolve(__dirname, '../.env')});
 // Basic Express server for mensa-sniper backend
 const express = require('express');
 const connectDB = require('./db');
