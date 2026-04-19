@@ -1,0 +1,44 @@
+name: Cleanup Vercel Deployments
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Runs daily at 3:00 AM UTC
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get install jq
+      - name: Cleanup main branch (keep 2)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT: ${{ secrets.VERCEL_PROJECT }}
+        run: |
+          deployments=$(curl -s -G "https://api.vercel.com/v6/deployments" \
+            --data-urlencode "projectId=$VERCEL_PROJECT" \
+            --data-urlencode "meta-gitBranch=main" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | jq -r '.deployments | .[] | .uid')
+          to_delete=$(echo "$deployments" | tail -n +3)
+          for id in $to_delete; do
+            echo "Deleting main deployment $id"
+            curl -X DELETE "https://api.vercel.com/v13/deployments/$id" \
+              -H "Authorization: Bearer $VERCEL_TOKEN"
+          done
+      - name: Cleanup dev branch (keep 3)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT: ${{ secrets.VERCEL_PROJECT }}
+        run: |
+          deployments=$(curl -s -G "https://api.vercel.com/v6/deployments" \
+            --data-urlencode "projectId=$VERCEL_PROJECT" \
+            --data-urlencode "meta-gitBranch=dev" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | jq -r '.deployments | .[] | .uid')
+          to_delete=$(echo "$deployments" | tail -n +4)
+          for id in $to_delete; do
+            echo "Deleting dev deployment $id"
+            curl -X DELETE "https://api.vercel.com/v13/deployments/$id" \
+              -H "Authorization: Bearer $VERCEL_TOKEN"
+          done
+
