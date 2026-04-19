@@ -48,6 +48,7 @@ module.exports = async (req, res) => {
             });
         });
     });
+    console.log('[DEBUG] /api/meals.js flattening output:', flatMeals.slice(0, 5));
     res.status(200).json(flatMeals);
 };
 
