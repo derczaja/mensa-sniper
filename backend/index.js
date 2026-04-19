@@ -22,13 +22,22 @@ app.get('/api/meals', async (req, res) => {
         const flatMeals = [];
         meals.forEach(meal => {
             (meal.planned || []).forEach(plan => {
+                // date als YYYY-MM-DD-String ausgeben, egal ob Date-Objekt oder String
+                let dateStr;
+                if (plan.date instanceof Date) {
+                    dateStr = plan.date.toISOString().slice(0, 10);
+                } else if (typeof plan.date === 'string') {
+                    dateStr = plan.date.slice(0, 10);
+                } else {
+                    dateStr = '';
+                }
                 flatMeals.push({
                     id: meal._id,
                     name: meal.name,
                     description: meal.description,
                     category: meal.category,
                     tags: meal.tags,
-                    date: plan.date.toISOString().slice(0, 10),
+                    date: dateStr,
                     location: plan.location
                 });
             });
