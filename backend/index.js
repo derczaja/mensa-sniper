@@ -45,7 +45,7 @@ const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 async function areMealsSameAI(mealA, mealB) {
     const prompt = `Vergleiche diese beiden Mensa-Gerichte und beantworte nur mit "true" (wenn sie das gleiche Gericht sind, auch bei kleinen Unterschieden) oder "false" (wenn sie unterschiedlich sind):\n\nGericht 1: ${JSON.stringify(mealA)}\nGericht 2: ${JSON.stringify(mealB)}`;
     const response = await openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
             {role: 'system', content: 'Du bist ein strenger Duplikatprüfer für Mensa-Gerichte.'},
             {role: 'user', content: prompt}

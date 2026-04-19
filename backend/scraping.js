@@ -8,7 +8,7 @@ async function extractMealsWithOpenAI(htmlText) {
     const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
     const prompt = `Extrahiere aus folgendem Mensa-Speiseplan-Tabellentext die Gerichte als strukturierte JSON-Liste mit Feldern: date, name, kategorie (falls erkennbar), ort='Mensa Garching'. Beispiel: [{"date": "2026-04-17", "name": "Nudelauflauf italienische Art", "kategorie": "Vegetarisch", "ort": "Mensa Garching"}, ...]. Der Text stammt aus einer Tabelle und kann unvollständig sein.\n\nTabellentext:\n${htmlText}`;
     const response = await openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
             {role: 'system', content: 'Du bist ein hilfreicher Datenextraktor für Mensa-Speisepläne.'},
             {role: 'user', content: prompt}
